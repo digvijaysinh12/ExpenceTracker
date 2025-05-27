@@ -1,0 +1,83 @@
+/* Global Styles */
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    transition: background-color 0.3s, color 0.3s;
+        display: flex;
+    flex-direction: column;
+}
+
+.dark-mode {
+    background-color: #121212;
+    color: #eaeaea;
+}
+
+.navbar-dark {
+    background-color: #333;
+}
+
+.navbar-light {
+    background-color: #f8f9fa;
+}
+
+.navbar-light .nav-link {
+    color: #000;
+}
+
+.navbar-dark .nav-link {
+    color: #f8f9fa;
+}
+
+.navbar-toggler-icon {
+    background-color: #000;
+    
+}
+
+.footer {
+    background-color: #f8f9fa;
+    color: #000;
+    margin-top: auto;
+}
+
+.dark-mode .footer {
+    background-color: #333;
+    color: #eaeaea;
+}
+
+main {
+    flex: 1;
+}
+
+/* Layout.css */
+.content {
+  max-height: calc(100vh - 200px); /* Adjust based on your layout */
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.switch-icons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.active-icon {
+  color: green;
+}
+
+.inactive-icon {
+  color: gray;
+}
+
+.switch-icons {
+  margin: 20px 0;
+}
+
+button.btn {
+  margin-top: 10px;
+}
+
+
