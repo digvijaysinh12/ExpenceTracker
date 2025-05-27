@@ -4,13 +4,16 @@ import nodemailer from 'nodemailer';
 const mailSender = async (email, title, body) => {
   try {
     // Create a transporter
-    let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      auth: {
-        user: process.env.MAIL_USER,  // fixed typo: MAIL_USRT -> MAIL_USER
-        pass: process.env.MAIL_PASS,
-      },
-    });
+let transporter = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: 465, // or 587 for TLS
+  secure: true, // true for port 465, false for port 587
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
 
     // Send email
     let info = await transporter.sendMail({
