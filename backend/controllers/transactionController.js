@@ -47,30 +47,18 @@ const addTransaction = async(req,res) => {
 const editTransaction = async (req, res) => {
   try {
     const { transactionId, payload } = req.body;
-
-    if (!transactionId || !payload) {
-      return res.status(400).json({ message: "Missing transactionId or payload" });
-    }
-
-    console.log("Editing Transaction:", transactionId, payload);
-
-    const updatedTransaction = await Transaction.findByIdAndUpdate(
-      transactionId,
-      { $set: payload },
-      { new: true } // returns the updated document
-    );
-
-    if (updatedTransaction) {
-      res.status(200).json({ message: "Transaction Updated Successfully", updatedTransaction });
-    } else {
-      res.status(404).json({ message: "Transaction not found" });
+        console.log("Req body is ==> ",req.body);
+    const isUpdate = await Transaction.findByIdAndUpdate(transactionId, payload);
+    if(isUpdate){
+          res.status(200).send("Transaction Updated Successfully");
+    }else{
+          res.status(404).send("Transaction Not updated Successfully");
     }
   } catch (error) {
-    console.error("Edit Transaction Error:", error);
-    res.status(500).json({ message: "Server error while updating transaction", error });
+    console.log(error);
+    res.status(500).json(error);
   }
 };
-
 
 // Delete Transaction
 const deleteTransaction = async (req, res) => {
