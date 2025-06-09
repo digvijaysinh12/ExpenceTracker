@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
-import Spinner from './Spinner'; // Make sure the path is correct
+import { useNavigate, Link } from 'react-router-dom';
+import Spinner from './Spinner'; // Make sure Spinner component exists
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -14,31 +14,41 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-const handleLogin = async () => {
-  if (!form.email || !form.password) {
-    return toast.warning('Please fill in all fields');
-  }
+  const handleLogin = async () => {
+    if (!form.email || !form.password) {
+      return toast.warning('Please fill in all fields');
+    }
 
-  setLoading(true);
-  try {
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    setLoading(true);
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-    await axios.post(`${API_URL}/api/auth/login`, form, {
-      withCredentials: true, 
-    });
+      const { data } = await axios.post(
+        `${API_URL}/api/auth/login`,
+        form,
+        { withCredentials: true }
+      );
 
-    toast.success('Login successful!');
-    setForm({ email: '', password: '' });
+      console.log('Login response', data);
 
-    setTimeout(() => {
-      navigate('/'); 
-    }, 500);
-  } catch (err) {
-    toast.error(err.response?.data?.message || 'Login failed');
-  } finally {
-    setLoading(false);
-  }
-};
+      // Save user data to localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      toast.success('Login successful!');
+      setForm({ email: '', password: '' });
+
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+    } catch (err) {
+      // Defensive error handling, fallback message
+      const message =
+        err.response?.data?.error || 'Login failed. Please try again.';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,7 +56,8 @@ const handleLogin = async () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('user')) {
+    const user = localStorage.getItem('user');
+    if (user) {
       navigate('/');
     }
   }, [navigate]);
@@ -62,8 +73,11 @@ const handleLogin = async () => {
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label className="form-label">Email</label>
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
                   <input
+                    id="email"
                     name="email"
                     type="email"
                     className="form-control"
@@ -71,12 +85,16 @@ const handleLogin = async () => {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    autoComplete="email"
                   />
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
                   <input
+                    id="password"
                     name="password"
                     type="password"
                     className="form-control"
@@ -84,6 +102,7 @@ const handleLogin = async () => {
                     value={form.password}
                     onChange={handleChange}
                     required
+                    autoComplete="current-password"
                   />
                 </div>
 
@@ -92,22 +111,25 @@ const handleLogin = async () => {
                   className="btn btn-primary w-100 d-flex justify-content-center align-items-center"
                   disabled={loading}
                 >
-                  {loading ? <Spinner size="spinner-border-sm" color="text-light" message="" /> : 'Login'}
+                  {loading ? (
+                    <Spinner size="spinner-border-sm" color="text-light" message="" />
+                  ) : (
+                    'Login'
+                  )}
                 </button>
               </form>
 
               <div className="text-center mt-3">
-                <a href="/forgot-password" className="text-decoration-none">
+                <Link to="/forgot-password" className="text-decoration-none">
                   Forgot Password?
-                </a>
+                </Link>
               </div>
 
-              {/* Sign Up Link */}
               <div className="text-center mt-3">
                 <span>Don't have an account? </span>
-                <a href="/signup" className="text-decoration-none">
+                <Link to="/signup" className="text-decoration-none">
                   Sign Up
-                </a>
+                </Link>
               </div>
             </div>
           </div>
