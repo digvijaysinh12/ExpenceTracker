@@ -22,6 +22,7 @@ const HomePage = () => {
   const [type, setType] = useState('all');
   const [viewData, setViewData] = useState('table');
   const [editable, setEditable] = useState(null);
+         const user = JSON.parse(localStorage.getItem('user'));
 
   const getAllTransaction = async () => {
     try {
@@ -32,7 +33,7 @@ const HomePage = () => {
       }
 
       const res = await axios.post("http://localhost:5000/api/transaction/get-transaction", {
-        userId: user._id,
+        userId: user.id,
         frequency,
         selectedDate: selectedDate.map(date => date.toISOString()),
         type
@@ -55,17 +56,20 @@ const HomePage = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       setLoading(true);
       if (editable) {
+        
         await axios.post('http://localhost:5000/api/transaction/edit-transaction', {
           ...value,
-          userId: user._id,
+          userId: user.id,
           _id: editable._id,
           date: value.date.toISOString(),
         });
         toast.success('Transaction updated');
       } else {
+                //alert(`UserId is ${user.id}`)
+
         await axios.post('http://localhost:5000/api/transaction/add-transaction', {
           ...value,
-          userId: user._id,
+          userId:user.id,
           date: value.date.toISOString(),
         });
         toast.success('Transaction added');
@@ -75,7 +79,7 @@ const HomePage = () => {
       setEditable(null);
       getAllTransaction();
     } catch (error) {
-      toast.error('Failed to process transaction');
+      toast.error(error.message)
     } finally {
       setLoading(false);
     }
