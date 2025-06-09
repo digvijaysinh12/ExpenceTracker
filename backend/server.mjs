@@ -24,7 +24,7 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-app.use(cookieParser);
+app.use(cookieParser());
 
 // Database connection
 connectDb();

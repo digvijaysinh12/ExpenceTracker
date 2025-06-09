@@ -17,7 +17,7 @@ let transporter = nodemailer.createTransport({
 
     // Send email
     let info = await transporter.sendMail({
-      from: 'expenseTracker@gmail.com',
+      from: process.env.MAIL_USER,
       to: email,
       subject: title,
       html: body,

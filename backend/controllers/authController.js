@@ -32,6 +32,12 @@ const signup = async (req, res) => {
 
     removeOtp(email);
 
+    const token = jwt.sign({ id: newUser._id}, process.env.JWT_SECRET, { expiresIn: "1d"})
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "Lax",
+    })
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
@@ -44,47 +50,42 @@ const signup = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email and password are required" });
-    }
-
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+
+    const isMatch = await bcrypt.compare(password,user.password);
+    if (!user || !isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
-    }
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-    //Create JWW
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-    res.cookie('token',token,{
-      httpOnly:true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 24 * 60 * 60 * 1000, // 1day
-    })
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "Lax",
+    });
 
     res.status(200).json({
       success: true,
-      message: "Login successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+      message: "Login successful"
     });
-  } catch (error) {
-    console.error("Login Error:", error.message);
-    res.status(500).json({ success: false, message: "Login failed", error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Login failed", error: err.message });
   }
 };
+
 
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
+    console.log(req.body);
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
@@ -108,6 +109,7 @@ const forgotPassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Forgot Password Error:", error.message);
+    console.log(error.message);
     res.status(500).json({ success: false, message: "Failed to send reset link", error: error.message });
   }
 };

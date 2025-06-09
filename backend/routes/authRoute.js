@@ -9,6 +9,7 @@ router.post("/signup", authController.signup);
 router.get("/user",authMiddleware,async(req,res) => {
     try{
         const User = await userModel.findById(req.user.id).select("-password");
+        return res.status(200).json({success: true, user:User});
     }catch(error){
         res.status(500).json({message: "Failed to fetch User"});
     }

@@ -4,9 +4,10 @@ import User from '../models/userModel.js';
 
 const sendOTP = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password} = req.body;
+    console.log(req.body);
 
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password ) {
       return res.status(403).json({
         success: false,
         message: "All fields are required",
