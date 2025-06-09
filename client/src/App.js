@@ -2,9 +2,10 @@ import React from 'react';
 import Signup from './components/Signup';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import Login from './pages/Login';
+
 import ForgotPassword from './pages/ForgotPassword';
 import ThemeProvider from './context/ThemeContext';
+import Login from './pages/Login';
 
 
 function App() {
