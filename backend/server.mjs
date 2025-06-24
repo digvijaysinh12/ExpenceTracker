@@ -36,6 +36,11 @@ app.use("/api/otp", otpRoutes);
 //transaction routes
 app.use('/api/transaction',transactionRoute)
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+if(process.env.NODE_ENV !== "production"){
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, ()=> console.log("Server is running on PORT: "+PORT));
+}
+
+// Export server for vercel
+export default server;
